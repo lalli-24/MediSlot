@@ -1,3 +1,5 @@
+import Availability from "./Availability";
+
 function DoctorCard({ doctor }) {
   return (
     <div className="doctor-card">
@@ -20,7 +22,9 @@ function DoctorCard({ doctor }) {
 
       <p>{doctor.about}</p>
 
-      <button>View Profile</button>
+      <Availability doctorId={doctor.id} />
+
+      <button>Book Appointment</button>
     </div>
   );
 }

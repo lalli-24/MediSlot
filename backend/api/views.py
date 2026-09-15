@@ -1,9 +1,10 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Specialization, Doctor
+from .models import Specialization, Doctor, DoctorAvailability
 from .serializers import (
     SpecializationSerializer,
+    DoctorAvailabilitySerializer,
     DoctorSerializer,
 )
 
@@ -32,4 +33,17 @@ def doctor_list(request):
         doctors,
         many=True
     )
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def doctor_availability(request, doctor_id):
+    availability = DoctorAvailability.objects.filter(
+        doctor_id=doctor_id
+    ).order_by("day", "start_time")
+
+    serializer = DoctorAvailabilitySerializer(
+        availability,
+        many=True
+    )
+
     return Response(serializer.data)
