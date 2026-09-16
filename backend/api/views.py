@@ -1,11 +1,17 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Specialization, Doctor, DoctorAvailability
+from .models import (
+    Specialization,
+    Doctor,
+    DoctorAvailability,
+    Appointment,
+)
 from .serializers import (
     SpecializationSerializer,
     DoctorAvailabilitySerializer,
     DoctorSerializer,
+    AppointmentSerializer,
 )
 
 
@@ -47,3 +53,40 @@ def doctor_availability(request, doctor_id):
     )
 
     return Response(serializer.data)
+
+@api_view(["POST"])
+def create_appointment(request):
+    serializer = AppointmentSerializer(data=request.data)
+
+    if serializer.is_valid():
+        doctor = serializer.validated_data["doctor"]
+        appointment_date = serializer.validated_data[
+            "appointment_date"
+        ]
+        appointment_time = serializer.validated_data[
+            "appointment_time"
+        ]
+
+        already_booked = Appointment.objects.filter(
+            doctor=doctor,
+            appointment_date=appointment_date,
+            appointment_time=appointment_time,
+            status__in=["Pending", "Confirmed"],
+        ).exists()
+
+        if already_booked:
+            return Response(
+                {
+                    "error": "This appointment slot is already booked."
+                },
+                status=400,
+            )
+
+        appointment = serializer.save()
+
+        return Response(
+            AppointmentSerializer(appointment).data,
+            status=201,
+        )
+
+    return Response(serializer.errors, status=400)

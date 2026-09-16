@@ -1,6 +1,10 @@
 from rest_framework import serializers
-from .models import Specialization, Doctor, DoctorAvailability
-
+from .models import (
+    Specialization,
+    Doctor,
+    DoctorAvailability,
+    Appointment,
+)
 
 class SpecializationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,3 +36,23 @@ class DoctorSerializer(serializers.ModelSerializer):
             "about",
             "image",
         ]
+
+class AppointmentSerializer(serializers.ModelSerializer):
+    doctor_name = serializers.CharField(
+        source="doctor.name",
+        read_only=True
+    )
+
+    class Meta:
+        model = Appointment
+        fields = [
+            "id",
+            "doctor",
+            "doctor_name",
+            "patient_name",
+            "appointment_date",
+            "appointment_time",
+            "status",
+            "created_at",
+        ]
+        read_only_fields = ["status", "created_at"]

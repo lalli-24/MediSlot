@@ -5,6 +5,7 @@ from .views import (
     specialization_list,
     doctor_list,
     doctor_availability,
+    create_appointment,
 )
 
 
@@ -15,5 +16,9 @@ urlpatterns = [
     path(
         "doctors/<int:doctor_id>/availability/",
         doctor_availability
+    ),
+    path(
+    "appointments/",
+    create_appointment
     ),
 ]
