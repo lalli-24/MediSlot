@@ -1,5 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from datetime import datetime, timedelta
 
 from .models import (
     Specialization,
@@ -90,3 +91,77 @@ def create_appointment(request):
         )
 
     return Response(serializer.errors, status=400)
+
+@api_view(["GET"])
+def available_slots(request, doctor_id):
+    date = request.query_params.get("date")
+
+    if not date:
+        return Response(
+            {"error": "Date is required."},
+            status=400
+        )
+
+    try:
+        selected_date = datetime.strptime(
+            date,
+            "%Y-%m-%d"
+        ).date()
+    except ValueError:
+        return Response(
+            {"error": "Invalid date format. Use YYYY-MM-DD."},
+            status=400
+        )
+
+    day_name = selected_date.strftime("%A")
+
+    availability = DoctorAvailability.objects.filter(
+        doctor_id=doctor_id,
+        day=day_name
+    ).first()
+
+    if not availability:
+        return Response({
+            "date": date,
+            "day": day_name,
+            "slots": []
+        })
+
+    booked_times = Appointment.objects.filter(
+        doctor_id=doctor_id,
+        appointment_date=selected_date,
+        status__in=["Pending", "Confirmed"]
+    ).values_list(
+        "appointment_time",
+        flat=True
+    )
+
+    booked_times = set(booked_times)
+
+    slots = []
+
+    current_time = datetime.combine(
+        selected_date,
+        availability.start_time
+    )
+
+    end_time = datetime.combine(
+        selected_date,
+        availability.end_time
+    )
+
+    while current_time < end_time:
+        slot_time = current_time.time()
+
+        if slot_time not in booked_times:
+            slots.append(slot_time.strftime("%H:%M"))
+
+        current_time += timedelta(
+            minutes=availability.slot_duration
+        )
+
+    return Response({
+        "date": date,
+        "day": day_name,
+        "slots": slots
+    })

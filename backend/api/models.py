@@ -33,7 +33,7 @@ class DoctorAvailability(models.Model):
         ("Saturday", "Saturday"),
         ("Sunday", "Sunday"),
     ]
-
+    slot_duration = models.PositiveIntegerField(default=30)
     doctor = models.ForeignKey(
         Doctor,
         on_delete=models.CASCADE,
