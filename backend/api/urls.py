@@ -7,6 +7,7 @@ from .views import (
     doctor_availability,
     create_appointment,
     available_slots,
+     appointment_list,
 )
 
 
@@ -18,12 +19,11 @@ urlpatterns = [
         "doctors/<int:doctor_id>/availability/",
         doctor_availability
     ),
-    path(
-    "appointments/",
-    create_appointment
-    ),
+    
     path(
     "doctors/<int:doctor_id>/available-slots/",
     available_slots
     ),
+    path("appointments/", appointment_list),
+    path("appointments/create/", create_appointment),
 ]

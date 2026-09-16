@@ -38,3 +38,23 @@ select {
   border-radius: 5px;
   cursor: pointer;
 }
+
+.booking-form {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.booking-form input {
+  display: block;
+  margin: 10px 0;
+  padding: 10px;
+  width: 250px;
+}
+
+.booking-form button {
+  margin: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+}

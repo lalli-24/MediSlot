@@ -165,3 +165,27 @@ def available_slots(request, doctor_id):
         "day": day_name,
         "slots": slots
     })
+
+@api_view(["GET"])
+def appointment_list(request):
+    patient_name = request.query_params.get("patient_name")
+
+    if not patient_name:
+        return Response(
+            {"error": "Patient name is required."},
+            status=400
+        )
+
+    appointments = Appointment.objects.filter(
+        patient_name=patient_name
+    ).order_by(
+        "appointment_date",
+        "appointment_time"
+    )
+
+    serializer = AppointmentSerializer(
+        appointments,
+        many=True
+    )
+
+    return Response(serializer.data)

@@ -3,6 +3,7 @@ import {
   getDoctors,
   getSpecializations,
 } from "./services/api";
+import Appointments from "./components/Appointments";
 
 import DoctorCard from "./components/DoctorCard";
 
@@ -20,7 +21,7 @@ function App() {
       .catch((error) => {
         console.error("Error fetching doctors:", error);
       });
-
+      <Appointments />
     getSpecializations()
       .then((response) => {
         setSpecializations(response.data);
@@ -79,6 +80,7 @@ function App() {
           />
         ))
       )}
+      <Appointments />
     </div>
   );
 }
