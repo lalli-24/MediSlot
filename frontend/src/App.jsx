@@ -1,3 +1,5 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import DoctorProfile from "./components/DoctorProfile";
 import { useEffect, useState } from "react";
 import {
   getDoctors,
@@ -82,6 +84,21 @@ function App() {
       )}
       <Appointments />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+
+        <Route
+          path="/doctor/:doctorId"
+          element={<DoctorProfile />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

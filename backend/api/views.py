@@ -220,3 +220,16 @@ def cancel_appointment(request, appointment_id):
     return Response(
         AppointmentSerializer(appointment).data
     )
+@api_view(["GET"])
+def doctor_detail(request, doctor_id):
+    try:
+        doctor = Doctor.objects.get(id=doctor_id)
+    except Doctor.DoesNotExist:
+        return Response(
+            {"error": "Doctor not found."},
+            status=404
+        )
+
+    serializer = DoctorSerializer(doctor)
+
+    return Response(serializer.data)
