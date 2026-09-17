@@ -189,3 +189,34 @@ def appointment_list(request):
     )
 
     return Response(serializer.data)
+
+@api_view(["PATCH"])
+def cancel_appointment(request, appointment_id):
+    try:
+        appointment = Appointment.objects.get(
+            id=appointment_id
+        )
+    except Appointment.DoesNotExist:
+        return Response(
+            {"error": "Appointment not found."},
+            status=404
+        )
+
+    if appointment.status == "Cancelled":
+        return Response(
+            {"error": "Appointment is already cancelled."},
+            status=400
+        )
+
+    if appointment.status == "Completed":
+        return Response(
+            {"error": "Completed appointments cannot be cancelled."},
+            status=400
+        )
+
+    appointment.status = "Cancelled"
+    appointment.save()
+
+    return Response(
+        AppointmentSerializer(appointment).data
+    )

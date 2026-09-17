@@ -23,7 +23,20 @@ function Appointments() {
       setMessage("Unable to load appointments.");
     }
   };
+  const cancelAppointment = async (appointmentId) => {
+  try {
+    await api.patch(
+      `/appointments/${appointmentId}/cancel/`
+    );
 
+    getAppointments();
+  } catch (error) {
+    setMessage(
+      error.response?.data?.error ||
+      "Unable to cancel appointment."
+    );
+  }
+};
   return (
     <div>
       <h2>My Appointments</h2>
@@ -59,6 +72,12 @@ function Appointments() {
             <p>
               Status: {appointment.status}
             </p>
+            {appointment.status !== "Cancelled" &&
+            appointment.status !== "Completed" && (
+              <button onClick={() => cancelAppointment(appointment.id)}>
+                Cancel Appointment
+              </button>
+            )}
           </div>
         ))
       )}
