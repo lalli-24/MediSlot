@@ -1,5 +1,5 @@
 import Availability from "./Availability";
-import BookingForm from "./BookingForm";
+import { Link } from "react-router-dom";
 
 function DoctorCard({ doctor }) {
   return (
@@ -24,8 +24,10 @@ function DoctorCard({ doctor }) {
       <p>{doctor.about}</p>
 
       <Availability doctorId={doctor.id} />
-      <BookingForm doctorId={doctor.id} />
-      <button>Book Appointment</button>
+
+      <Link to={`/doctor/${doctor.id}`}>
+        <button>View Profile</button>
+      </Link>
     </div>
   );
 }

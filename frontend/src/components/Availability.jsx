@@ -20,8 +20,6 @@ function Availability({ doctorId }) {
 
   return (
     <div>
-      <h3>Weekly Availability</h3>
-
       {availability.length === 0 ? (
         <p>No availability found.</p>
       ) : (

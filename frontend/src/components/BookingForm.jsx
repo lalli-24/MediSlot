@@ -7,12 +7,16 @@ function BookingForm({ doctorId }) {
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const getSlots = async () => {
     if (!date) {
       setMessage("Please select a date.");
       return;
     }
+
+    setLoading(true);
+    setMessage("");
 
     try {
       const response = await api.get(
@@ -21,17 +25,25 @@ function BookingForm({ doctorId }) {
 
       setSlots(response.data.slots);
       setSelectedSlot("");
-      setMessage("");
+
+      if (response.data.slots.length === 0) {
+        setMessage("No available slots for this date.");
+      }
     } catch (error) {
       setMessage("Unable to load available slots.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const bookAppointment = async () => {
     if (!patientName || !date || !selectedSlot) {
-      setMessage("Please fill all details.");
+      setMessage("Please fill all details and select a time slot.");
       return;
     }
+
+    setLoading(true);
+    setMessage("");
 
     try {
       await api.post("/appointments/create/", {
@@ -41,14 +53,21 @@ function BookingForm({ doctorId }) {
         appointment_time: `${selectedSlot}:00`,
       });
 
-      setMessage("Appointment booked successfully!");
       setSelectedSlot("");
-      getSlots();
+
+      const response = await api.get(
+        `/doctors/${doctorId}/available-slots/?date=${date}`
+      );
+
+      setSlots(response.data.slots);
+      setMessage("Appointment booked successfully!");
     } catch (error) {
       setMessage(
         error.response?.data?.error ||
-        "Unable to book appointment."
+          "Unable to book appointment."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,11 +85,19 @@ function BookingForm({ doctorId }) {
       <input
         type="date"
         value={date}
-        onChange={(e) => setDate(e.target.value)}
+        onChange={(e) => {
+          setDate(e.target.value);
+          setSlots([]);
+          setSelectedSlot("");
+          setMessage("");
+        }}
       />
 
-      <button onClick={getSlots}>
-        Check Available Slots
+      <button
+        onClick={getSlots}
+        disabled={loading}
+      >
+        {loading ? "Loading..." : "Check Available Slots"}
       </button>
 
       {slots.length > 0 && (
@@ -94,8 +121,11 @@ function BookingForm({ doctorId }) {
         </p>
       )}
 
-      <button onClick={bookAppointment}>
-        Book Appointment
+      <button
+        onClick={bookAppointment}
+        disabled={loading}
+      >
+        {loading ? "Booking..." : "Book Appointment"}
       </button>
 
       {message && <p>{message}</p>}

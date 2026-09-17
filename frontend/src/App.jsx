@@ -1,15 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import DoctorProfile from "./components/DoctorProfile";
 import { useEffect, useState } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+
 import {
   getDoctors,
   getSpecializations,
 } from "./services/api";
+
 import Appointments from "./components/Appointments";
-
 import DoctorCard from "./components/DoctorCard";
+import DoctorProfile from "./components/DoctorProfile";
 
-function App() {
+
+function Home() {
   const [doctors, setDoctors] = useState([]);
   const [specializations, setSpecializations] = useState([]);
   const [selectedSpecialization, setSelectedSpecialization] =
@@ -23,7 +29,7 @@ function App() {
       .catch((error) => {
         console.error("Error fetching doctors:", error);
       });
-      <Appointments />
+
     getSpecializations()
       .then((response) => {
         setSpecializations(response.data);
@@ -82,16 +88,21 @@ function App() {
           />
         ))
       )}
+
       <Appointments />
     </div>
   );
 }
 
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
         <Route
           path="/doctor/:doctorId"
